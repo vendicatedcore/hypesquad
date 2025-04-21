@@ -7,7 +7,7 @@ Requires [__NODE.js__](https://nodejs.org/en) to run.
 ```bash
 # 1. Create a new folder for the project
 mkdir hypesquad
-cd hypesqua
+cd hypesquad
 
 # 2. Initialize a new Node.js project 
 npm init -y
