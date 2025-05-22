@@ -1,32 +1,54 @@
 const axios = require('axios');
-const token = 'UToken';
+const readline = require('readline').createInterface({
+  input: process.stdin,
+  output: process.stdout
+});
 
-const HYPESQUAD = {
-  bravery: 1,
-  brilliance: 2,
-  balance: 3,
+const HYPESQUAD_HOUSES = {
+  '1': 'Bravery',
+  '2': 'Brilliance', 
+  '3': 'Balance'
 };
 
-async function setHypeSquad(house) {
-  const houseId = HYPESQUAD[house.toLowerCase()];
-  if (!houseId) return console.log('Invalid house. Use bravery, brilliance, or balance.');
+async function main() {
+  console.log('🎮 Discord HypeSquad Selector\n');
+  
+  const token = await new Promise(resolve => {
+    readline.question('Enter your Discord token: ', resolve);
+  });
+  
+  console.log('\n🏠 Available HypeSquad Houses:');
+  console.log('1. Bravery (1)');
+  console.log('2. Brilliance (2)');
+  console.log('3. Balance (3)\n');
 
+  const choice = await new Promise(resolve => {
+    readline.question('Select house (1-3): ', resolve);
+  });
+  
+  if (!HYPESQUAD_HOUSES[choice]) {
+    console.log('❌ Invalid selection. Please choose 1, 2, or 3.');
+    readline.close();
+    return;
+  }
+  
   try {
     await axios.post(
       'https://discord.com/api/v9/hypesquad/online',
-      { house_id: houseId },
+      { house_id: parseInt(choice) },
       {
         headers: {
-          Authorization: token,
-          'Content-Type': 'application/json',
-        },
+          Authorization: token.trim(),
+          'Content-Type': 'application/json'
+        }
       }
     );
-    console.log(`✅ Successfully joined HypeSquad ${house}`);
-  } catch (err) {
-    console.error('❌ Failed to change HypeSquad:', err.response?.data || err.message);
+    console.log(`\n✅ Successfully joined HypeSquad ${HYPESQUAD_HOUSES[choice]}!`);
+  } catch (error) {
+    console.error('\n❌ Failed to change HypeSquad:', error.response?.data?.message || error.message);
+  } finally {
+    readline.close();
   }
 }
 
-//'bravery', 'brilliance', or 'balance'
-setHypeSquad('bravery');
+main();
